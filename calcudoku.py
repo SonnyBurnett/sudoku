@@ -9,9 +9,12 @@
 
 import itertools
 from functools import reduce
-from colorama import Fore
 import csv
 import math
+from os import listdir
+from os.path import isfile, join
+
+SUDOKUPATH = "/Users/tacobakker/PycharmProjects/sudoku/puzzels/"
 
 
 def colored(r, g, b, text):
@@ -76,7 +79,6 @@ def colorprint(tekst, num):
         return yellow(tekst)
     else:
         return "\033[0m"
-
 
 
 # a list of any numbers will be multiplied
@@ -302,8 +304,6 @@ def makeMatrixColor(matrix, matrixSize):
         res = [[0 for i in range(matrixSize)] for j in range(matrixSize)]
         for x in matrix:
                 for y in x[3]:
-                        #a = int(y[0])
-                        #b = int(y[1])
                         res[int(y[0])][int(y[1])] = x[0]
         return res
 
@@ -373,8 +373,7 @@ def leesCSV(matrixFileName):
         return vlakkies
 
 
-def main():
-        matrixCSV = leesCSV("puzzels/calcudoku5.csv")
+def findSudokuSolution(matrixCSV):
         if checkInputCSV(matrixCSV):
                 matrixSize = int(math.sqrt(sum([len(x) for x in matrixCSV]) - 2 * (len(matrixCSV))))
                 matrixInitialDefinition = makeMatrixDefinition(matrixCSV)
@@ -383,6 +382,16 @@ def main():
                 printMatrixDef(matrixComplete, matrixSize)
                 emptyMatrix = makeInitialMatrix(matrixSize, matrixComplete)
                 sudoku(emptyMatrix, matrixComplete, 0, matrixSize)
+
+
+def leesFilesenCalculate():
+        sudokufiles = [f for f in listdir(SUDOKUPATH) if isfile(join(SUDOKUPATH, f))]
+        for sudokuFile in sudokufiles:
+                findSudokuSolution(leesCSV(SUDOKUPATH + sudokuFile))
+
+
+def main():
+        leesFilesenCalculate()
 
 
 if __name__ == '__main__':

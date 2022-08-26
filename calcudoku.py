@@ -1,3 +1,12 @@
+# just read the file, line by line
+# automatically determine the matrix size
+# interpret the CSV lines and create the first 5 columns of the definition of the matrix
+# per calculation area, determine a list of possible values that fit that calculation
+# add all those possibilities to the matrix definition, and print it on the screen
+# Make an empty matrix to start with. We fill it with negative numbers to not disrupt checks
+# Recursively check all possible values to find the correct outcome of the calcudoku
+
+
 import itertools
 from functools import reduce
 from colorama import Fore
@@ -5,7 +14,6 @@ import csv
 import math
 
 
-COLORSLIST = ["BLUE", "RED", "ORANGE", "PURPLE", "BLACK", "YELLOW", "GREEN", "GREY", "CYAN", "MAGNETA"]
 def colored(r, g, b, text):
     return "\033[7m\033[38;2;{};{};{}m{} \033[38;2;255;255;255m".format(r, g, b, text)
 
@@ -126,7 +134,6 @@ def findValidCombinationsDiv(lenMatrix, lenCalc, antwoord):
 
 def findValidCombinations(lenMatrix, lenCalc, antwoord, calcType):
         res = []
-
         if calcType == "+":
                 res = findValidCombinationsAdd(lenMatrix, lenCalc, antwoord)
         elif calcType == "*":
@@ -138,12 +145,6 @@ def findValidCombinations(lenMatrix, lenCalc, antwoord, calcType):
         else:
                 print("invalid calculation value")
         return res
-
-
-def printMatrix(mat, matSize):
-        for i in range(0, matSize):
-                print(mat[i])
-        print()
 
 
 def makeVerticalList(sudokuMatrix, matrixSize):
@@ -171,7 +172,6 @@ def checkCalculations(matrix, matrixDef, matrixSize):
         oordeel = True
         teller = 0
         printRegels = []
-
         while teller < len(matrixDef):
                 result = 0
                 calcType = matrixDef[teller][1]
@@ -197,7 +197,6 @@ def checkCalculations(matrix, matrixDef, matrixSize):
                         num2 = matrix[matrixDef[teller][3][1][0]][matrixDef[teller][3][1][1]]
                         result = abs(num1 - num2)
                         regel = str(num1) + " - " + str(num2)
-
                 elif calcType == "%":
                         num1 = matrix[matrixDef[teller][3][0][0]][matrixDef[teller][3][0][1]]
                         num2 = matrix[matrixDef[teller][3][1][0]][matrixDef[teller][3][1][1]]
@@ -206,7 +205,6 @@ def checkCalculations(matrix, matrixDef, matrixSize):
                                 result = num1 / num2
                         else:
                                 result = num2 / num1
-
                 else:
                         print("invalid calculation value")
 
@@ -263,7 +261,6 @@ def makeInitialMatrix(matrixSize, defMatrix):
 
 
 def sudoku(suk, matrix, teller, matrixSize):
-
         if teller < len(matrix):
                 tmp = 0
                 for x in matrix[teller][5]:
@@ -271,7 +268,6 @@ def sudoku(suk, matrix, teller, matrixSize):
                         if checkValidityOfMatrix(suk, matrixSize):
                                 sudoku(suk, matrix, teller + 1, matrixSize)
                         tmp+=1
-
                 suk = tryMatrixChange(matrix[teller][4], matrix[teller][3], suk)
         else:
                 if checkValidityOfMatrix(suk, matrixSize):
@@ -280,13 +276,9 @@ def sudoku(suk, matrix, teller, matrixSize):
                                 print()
                                 #printMatrix6(suk, matrixSize)
                                 printMatrixColor(suk, matrixSize, makeMatrixColor(matrix, matrixSize))
-
-
                 else:
                         print("failure")
-                        printMatrix6(suk, matrixSize)
 
-#****************************************
 
 def printMatrixDef(matrix, matrixSize):
         print("Dit is de puzzel zoals ik die heb ingevoerd!")
@@ -327,84 +319,6 @@ def printMatrixColor(matrix, matrixSize, matrixColor):
                 telhor+=1
                 print()
         print(colorprint("", 300))
-
-
-
-def printMatrixPoss(matrix, matrixSize):
-        tmp = [[0 for i in range(matrixSize)] for j in range(matrixSize)]
-        for x in matrix:
-                for y in x[3]:
-                        a = int(y[0])
-                        b = int(y[1])
-                        tmp[a][b] = x[1]+" "+str(len(x[5]))
-        printMatrix(tmp, matrixSize)
-
-
-def printMatrix6(mat, matSize):
-    for i in range(0, matSize):
-        lijn = ""
-        for j in mat[i]:
-            if j > 0:
-                lijn = lijn + str(j) + " "
-            else:
-                lijn = lijn + "- "
-        #print(lijn)
-        print(Fore.RED + lijn + Fore.BLACK)
-
-    print()
-
-
-
-
-
-def makeMatrixDefinition4():
-        suk = []
-        suk.append([0, "-", 1, [(0, 0), (0, 1)], [-111,-112]])
-        suk.append([1, "+", 3, [(0, 2), (0, 3)], [-211,-212]])
-        suk.append([2, "+", 4, [(1, 0), (2, 0), (2, 1)], [-321,-322,-323]])
-        suk.append([3, "+", 11, [(1, 1), (1, 2), (2, 2)], [-431,-432,-433]])
-        suk.append([4, "+", 9, [(1, 3), (2, 3), (3, 3)], [-541,-542, -544]])
-        suk.append([5, "+", 6, [(3, 0), (3, 1), (3,2)], [-651,-652, -653]])
-        return suk
-
-
-
-def makeMatrixDefinitionExample():
-        suk5 = [[(0, 0), (0, 1), (0, 2), (0,3), (0,4)],
-                [(1, 0), (1, 1), (1, 2), (1,3), (1,4)],
-                [(2, 0), (2, 1), (2, 2), (2,3), (2,4)],
-                [(3, 0), (3, 1), (3, 2), (3,3), (3,4)],
-                [(4, 0), (4, 1), (4, 2), (4,3), (4,4)]]
-        return suk5
-
-
-def makeMatrixDefinition5():
-        suk = []
-        suk.append([0, "%", 2, [(0, 0), (1, 0)], [-11,-12]])
-        suk.append([1, "%", 3, [(0, 1), (0, 2)], [-21,-22]])
-        suk.append([2, "-", 1, [(1, 1), (2, 1)], [-31,-32]])
-        suk.append([3, "*", 20, [(0, 3), (0, 4)], [-41,-42]])
-        suk.append([4, "*", 18, [(1, 2), (1, 3), (1,4), (2,4), (3,4)], [-71,-72, -73, -74, -75]])
-        suk.append([5, "*", 10, [(2, 2), (2, 3)], [-51,-52]])
-        suk.append([6, "*", 80, [(3, 3), (4, 2), (4,3), (4,4)], [-61,-62, -63, -64]])
-        suk.append([7, "*", 180, [(2, 0), (3, 0), (3, 1), (3, 2), (4,0), (4,1)], [-1, -2, -3, -4, -5, -6]])
-        return suk
-
-
-def makeMatrixDefinition6():
-        suk = []
-        suk.append([0, "+", 8, [(0, 0), (0, 1), (1, 1)], [-31, -32, -33]])
-        suk.append([1, "%", 2, [(0, 2), (0, 3)], [-61, -62]])
-        suk.append([2, "-", 1, [(0, 4), (1, 4)], [-71, -72]])
-        suk.append([3, "+", 8, [(0, 5), (1, 5), (2,5), (2,4)], [-81, -82, -83, -84]])
-        suk.append([4, "+", 9, [(1, 0), (2, 0), (3,0)], [-91, -92, -93]])
-        suk.append([5, "+", 9, [(2, 1), (3, 1)], [-111, -112]])
-        suk.append([6, "*", 96, [(1, 2), (1, 3), (2,3), (3,3)], [-11,-12, -13, -14]])
-        suk.append([7, "+", 20, [(2, 2), (3, 2), (4,1), (4,2), (4,3)], [-21,-22, -23, -24, -25]])
-        suk.append([8, "+", 15, [(4, 0), (5, 0), (5,1), (5,2), (5,3)], [-51, -52, -53, -54, -55]])
-        suk.append([9, "*", 96, [(3, 4), (3, 5), (4, 5)], [-41,-42, -43]])
-        suk.append([10, "+", 9, [(4, 4), (5, 4), (5, 5)], [-1, -2, -3]])
-        return suk
 
 
 def realTrueDiv(x, y):
@@ -459,17 +373,7 @@ def leesCSV(matrixFileName):
         return vlakkies
 
 
-# just read the file, line by line
-# automatically determine the matrix size
-# interpret the CSV lines and create the first 5 columns of the definition of the matrix
-# per calculation area, determine a list of possible values that fit that calculation
-# add all those possibilities to the matrix definition, and print it on the screen
-# Make an empty matrix to start with. We fill it with negative numbers to not disrupt checks
-# Recursively check all possible values to find the correct outcome of the calcudoku
-
-
 def main():
-
         matrixCSV = leesCSV("puzzels/calcudoku5.csv")
         if checkInputCSV(matrixCSV):
                 matrixSize = int(math.sqrt(sum([len(x) for x in matrixCSV]) - 2 * (len(matrixCSV))))
@@ -479,26 +383,6 @@ def main():
                 printMatrixDef(matrixComplete, matrixSize)
                 emptyMatrix = makeInitialMatrix(matrixSize, matrixComplete)
                 sudoku(emptyMatrix, matrixComplete, 0, matrixSize)
-
-
-        print()
-        print("******************************************************************************")
-        print()
-
-
-        matrixSize = 5
-        matrixDef = addPossibilities(createAllPossibilities(matrixSize, makeMatrixDefinition5()),
-                                     makeMatrixDefinition5())
-        printMatrixDef(matrixDef, matrixSize)
-        sudoku(makeInitialMatrix(matrixSize, matrixDef), matrixDef, 0, matrixSize)
-        print()
-        print("******************************************************************************")
-        print()
-
-        matrixSize = 6
-        matrixDef = addPossibilities(createAllPossibilities(matrixSize, makeMatrixDefinition6()), makeMatrixDefinition6())
-        printMatrixDef(matrixDef, matrixSize)
-        sudoku(makeInitialMatrix(matrixSize, matrixDef), matrixDef, 0, matrixSize)
 
 
 if __name__ == '__main__':

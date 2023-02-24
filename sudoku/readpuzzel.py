@@ -1,6 +1,7 @@
 import math
 from os import listdir
 from os.path import isfile, join
+import calcgui
 
 
 #
@@ -128,28 +129,39 @@ def writeLines(vakjes):
 
 
 def convertInputToCSV(filenamein, filenameout):
-    inhoud = leesFile(filenamein)
-    print("[INFO] ", filenamein, "read!")
-    matrix = convertToMatrix(inhoud)
-    print("[INFO] file converted to matrix!")
-    matrixSize = getMatrixSize(matrix)
-    print("[INFO] matrix size is:", matrixSize)
-    maxnum = matrixSize * matrixSize
-    print("[INFO] maxnum is:", maxnum)
-    neighbours = getAllNeighbours(matrix, matrixSize)
-    print("[INFO] made a list of all neighbours in matrix!")
-    vakjes = getVakjes(maxnum, matrix, neighbours)
-    print("[INFO] determined the calculation blocks in the matrix!")
-    result = writeLines(vakjes)
-    print("[INFO] converted the calculation blocks to strings!")
-    writeRegelsToFile(result, filenameout)
-    print("[INFO] wrote the strings to a new file!")
+    #inhoud = leesFile(filenamein)
+    #print("[INFO] ", filenamein, "read!")
+    inhoudGui = []
+    answer = input("Hoe groot (4/5/6) ")
+    if answer == '4':
+        inhoudGui = calcgui.getPuzzelGui(4)
+    if answer == '5':
+        inhoudGui = calcgui.getPuzzelGui(5)
+    if answer == '6':
+        inhoudGui = calcgui.getPuzzelGui(6)
+
+    if answer in ['4','5','6']:
+        matrix = convertToMatrix(inhoudGui)
+        print("[INFO] file converted to matrix!")
+        matrixSize = getMatrixSize(matrix)
+        print("[INFO] matrix size is:", matrixSize)
+        maxnum = matrixSize * matrixSize
+        print("[INFO] maxnum is:", maxnum)
+        neighbours = getAllNeighbours(matrix, matrixSize)
+        print("[INFO] made a list of all neighbours in matrix!")
+        vakjes = getVakjes(maxnum, matrix, neighbours)
+        print("[INFO] determined the calculation blocks in the matrix!")
+        result = writeLines(vakjes)
+        print("[INFO] converted the calculation blocks to strings!")
+        writeRegelsToFile(result, filenameout)
+        print("[INFO] wrote the strings to a new file!")
 
 
 
-def main():
-    leesFilesAndConvert()
 
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     leesFilesAndConvert()
+#
+#
+# if __name__ == '__main__':
+#     main()
